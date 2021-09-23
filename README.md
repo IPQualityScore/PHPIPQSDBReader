@@ -4,7 +4,7 @@
 	<h2 class="text-bold headerHR" style="font-size: 1.5em;">Flat File Version 1.0</h2>
 	<div class="spacing-10"></div>
 	<p>
-        The IPQS PHP reader brings a new standard of performance and compression to our IP reputation and geo location services. Setting up and using the reader can be achieved in minutes.
+        The IPQS PHP DB reader allows you to read our flat file databases and get started implimenting our proxy detection easily.
     </p>
     You can find the full <a href="https://www.ipqualityscore.com/documentation/ip-reputation-database/php" target="_blank">PHP IPQualityScore flat file database documentation here</a> or view a description of what our <a href="https://www.ipqualityscore.com/proxy-detection-database" target="_blank">proxy detection database does here</a>.
     <h6 class="text-bold headerHR">Installation</h6>

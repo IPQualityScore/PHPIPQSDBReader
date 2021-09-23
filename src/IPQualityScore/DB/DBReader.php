@@ -58,9 +58,15 @@ class DBReader {
             $next = 0;
             try {
                 if($literal[$position] === "0"){
-                    $next = unpack("Vread", $this->ReadAt($file_position, static::TREE_BYTE_WIDTH))['read'];
+                    $pos = $this->ReadAt($file_position, static::TREE_BYTE_WIDTH);
+                    if(strlen($pos) === 4){
+                        $next = unpack("Vread", $pos)['read'];
+                    }
                 } else {
-                    $next = unpack("Vread", $this->ReadAt($file_position + 4, static::TREE_BYTE_WIDTH)['read']);
+                    $pos = $this->ReadAt($file_position + 4, static::TREE_BYTE_WIDTH);
+                    if(strlen($pos) === 4){
+                        $next = unpack("Vread", $pos)['read'];
+                    }
                 }
             } catch(Exception $e){
                 throw new IPNotFoundException("Invalid or nonexistant IP address specified for lookup. (EID: 9)");
@@ -69,13 +75,21 @@ class DBReader {
             try {
                 if($next === 0){
                     if($literal[$position] === "0"){
-                        $next = unpack("Vread", $this->ReadAt($file_position + 4, static::TREE_BYTE_WIDTH)['read']);
+                        $pos = $this->ReadAt($file_position + 4, static::TREE_BYTE_WIDTH);
+                        if(strlen($pos) === 4){
+                            $next = unpack("Vread", $pos)['read'];
+                        }
+
                         if($next === 0){
                             throw new IPNotFoundException();
                         }
 
                     } else {
-                        $next = unpack("Vread", $this->ReadAt($file_position, static::TREE_BYTE_WIDTH))['read'];
+                        $pos = $this->ReadAt($file_position, static::TREE_BYTE_WIDTH);
+                        if(strlen($pos) === 4){
+                            $next = unpack("Vread", $pos)['read'];
+                        }
+
                         if($next === 0){
                             throw new IPNotFoundException();
                         }
@@ -177,8 +191,7 @@ class DBReader {
             throw new FileReaderException("Invalid file format, invalid header bytes, EID 2.");
         }
 
-        $this->tree_start = $headers['header_bytes1'] | $headers['header_bytes2'] | $headers['header_bytes3'];
-
+        $this->tree_start = $this->uVarInt([$headers['header_bytes1'], $headers['header_bytes2'], $headers['header_bytes3']]);
         if($this->tree_start === 0){
             throw new FileReaderException("Invalid file format, invalid header bytes. EID 2");
         }
@@ -199,8 +212,8 @@ class DBReader {
         $length = $this->tree_start - static::BASE_HEADER_BYTES;
         $column_data = $this->Read($length);
 
-        for($i=0;$i<strlen($column_data);$i+=24){
-            $values = unpack(sprintf(static::COLUNN_HEADER, $i), $column_data);
+        for($i=0;$i<$length/24;$i++){
+            $values = unpack(sprintf(static::COLUNN_HEADER, $i * 24), $column_data);
             $this->columns[] = Column::Create($values['name'], BinaryOption::Create($values['value']));
         }
 
@@ -333,5 +346,21 @@ class DBReader {
         }
 
         return $data;
+    }
+
+    protected function uVarInt($bytes){
+        $x = 0;
+        $s = 0;
+        for($i = 0;$i<count($bytes);$i++){
+            $b = $bytes[$i];
+            if($b < 0x80) {
+                return $x | $b<<$s;
+            }
+
+            $x |= $b&0x7f << $s;
+            $s += 7;
+        }
+
+        return 0;
     }
 }

@@ -14,7 +14,7 @@
             "email": "support@ipqualityscore.com"
         }
     ],
-    "minimum-stability": "RC",
+    "minimum-stability": "stable",
     "require": {
     	"php": ">=5.3.0"
     }

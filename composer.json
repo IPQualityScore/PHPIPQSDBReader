@@ -1,0 +1,21 @@
+{
+    "name": "ipqualityscore/ipqs-php-db-reader",
+    "description": "IPQualityScore IP Address Reputation & Proxy Detection PHP DB Reader",
+    "type": "library",
+    "license": "MIT",
+    "autoload": {
+        "psr-4": {
+            "IPQualityScore\\DB\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "IPQualityScore",
+            "email": "support@ipqualityscore.com"
+        }
+    ],
+    "minimum-stability": "RC",
+    "require": {
+    	"php": ">=5.3.0"
+    }
+}

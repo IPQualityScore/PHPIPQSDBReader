@@ -559,6 +559,20 @@ class IPQSRecord {
         return 0;
     }
 
+    /**
+     * Hostname - Getter/Setter.
+     *
+     * @param string $value, changes held value if $value is not null.
+     * @return string|void
+     */
+    public function Hostname($value = null){
+        if($value !== null){
+            $this->hostname = $value;
+        }
+
+        return $this->hostname;
+    }
+
     protected $isproxy = false;
     protected $isvpn = false;
     protected $istor = false;
@@ -588,5 +602,6 @@ class IPQSRecord {
     protected $timezone;
     protected $latitude;
     protected $longitude;
+    protected $hostname;
     protected $columns = [];
 }

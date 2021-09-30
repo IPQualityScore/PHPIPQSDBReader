@@ -153,7 +153,6 @@ class DBReader {
             $headers = unpack(static::HEADERS, $this->Read(static::BASE_HEADER_BYTES));
         } catch(\Exception $e){
             throw new FileReaderException("Invalid file format, unable to read first 11 bytes. EID 1");
-            return false;
         }
 
         if(!isset($headers['file_type'])){

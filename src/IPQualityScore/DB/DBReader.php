@@ -45,48 +45,49 @@ class DBReader {
             throw new FileReaderException("Attemtped to look up IPv6 using IPv4 database file. Aborting.");
         }
 
-        $literal = $this->IP2Literal($ip);
         $position = 0;
-
+        $previous = array();
+        $literal = $this->IP2Literal($ip);
         $file_position = $this->tree_start + static::BASE_TREE_BYTES;
 
-        while(true){
+        for($l=0;$l<257;$l++){
+            $previous[$position] = $file_position;
+
             if(strlen($literal) <= $position){
                 throw new IPNotFoundException("Invalid or nonexistant IP address specified for lookup. (EID: 8)");
             }
 
-            $next = 0;
-            try {
-                if($literal[$position] === "0"){
-                    $next = unpack("Vread", $this->ReadAt($file_position, static::TREE_BYTE_WIDTH))['read'];
-                } else {
-                    $next = unpack("Vread", $this->ReadAt($file_position + 4, static::TREE_BYTE_WIDTH)['read']);
-                }
-            } catch(Exception $e){
-                throw new IPNotFoundException("Invalid or nonexistant IP address specified for lookup. (EID: 9)");
+            if($literal[$position] === "0"){
+                $file_position = unpack("Vread", $this->ReadAt($file_position, static::TREE_BYTE_WIDTH))['read'];
+            } else {
+                $file_position = unpack("Vread", $this->ReadAt($file_position + 4, static::TREE_BYTE_WIDTH)['read']);
             }
 
-            try {
-                if($next === 0){
-                    if($literal[$position] === "0"){
-                        $next = unpack("Vread", $this->ReadAt($file_position + 4, static::TREE_BYTE_WIDTH)['read']);
-                        if($next === 0){
-                            throw new IPNotFoundException();
-                        }
+            if($this->blacklistfile !== true){
+                if($file_position === 0){
+                    for($i = 0; $i <= $position; $i++){
+                        if($literal[$position - $i] === "1"){
+                            $literal[$position - $i] = "0";
+                            
+                            for($n = ($position - $i + 1);$n < strlen($literal);$n++){
+                                $literal[$n] = "1";
+                            }
 
-                    } else {
-                        $next = unpack("Vread", $this->ReadAt($file_position, static::TREE_BYTE_WIDTH))['read'];
-                        if($next === 0){
-                            throw new IPNotFoundException();
+                            $position = $position - $i;
+                            $file_position = $previous[$position];
+                            break;
                         }
                     }
+
+                    continue;
                 }
-            } catch(Exception $e){
-                throw new IPNotFoundException("Invalid or nonexistant IP address specified for lookup. (EID: 10)");
             }
 
-            $file_position = $next;
             if($file_position < $this->tree_end){
+                if($file_position === 0){
+                    break;
+                }
+
                 $position++;
                 continue;
             }
@@ -104,6 +105,8 @@ class DBReader {
                 throw new IPNotFoundException("Invalid or nonexistant IP address specified for lookup. (EID: 12)");
             }
         }
+
+        throw new IPNotFoundException("Invalid or nonexistant IP address specified for lookup. (EID: 13)");
     }
     
     /**
@@ -126,6 +129,7 @@ class DBReader {
     protected $binary_data;
     protected $record_bytes;
     protected $valid = false;
+    protected $blacklistfile;
     protected $columns = array();
 
     const HEADERS = 'Cfile_type/Cversion/C3header_bytes/vrecord_bytes/Vfile_bytes';
@@ -159,6 +163,10 @@ class DBReader {
 
         if($file_type->Has(BinaryOption::BinaryData)){
             $this->binary_data = true;
+        }
+
+        if($file_type->Has(BinaryOption::BlacklistFile)){
+            $this->blacklistfile = true;
         }
 
         if($this->valid === false){

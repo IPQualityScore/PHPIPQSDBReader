@@ -45,14 +45,16 @@ class BinaryOption {
         return $result;
     }
 
-    const IPv4Map = 0b0001;
+    const IPv4Map = 1 << 0;
     const IPv6Map = 1 << 1;
+    const BlacklistFile = 1 << 2;
+    const BinaryData = 1 << 7;
+    
     const TreeData = 1 << 2;
     const StringData = 1 << 3;
     const SmallIntData = 1 << 4;
     const IntData = 1 << 5;
     const FloatData = 1 << 6;
-    const BinaryData = 1 << 7;
 
     const IsProxy = 1 << 0;
     const IsVPN = 1 << 1;

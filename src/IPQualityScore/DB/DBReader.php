@@ -60,7 +60,7 @@ class DBReader {
             if($literal[$position] === "0"){
                 $file_position = unpack("Vread", $this->ReadAt($file_position, static::TREE_BYTE_WIDTH))['read'];
             } else {
-                $file_position = unpack("Vread", $this->ReadAt($file_position + 4, static::TREE_BYTE_WIDTH)['read']);
+                $file_position = unpack("Vread", $this->ReadAt($file_position + 4, static::TREE_BYTE_WIDTH))['read'];
             }
 
             if($this->blacklistfile !== true){

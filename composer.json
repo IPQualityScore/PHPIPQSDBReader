@@ -5,7 +5,7 @@
     "license": "MIT",
     "autoload": {
         "psr-4": {
-            "IPQualityScore\\DB\\": "src/"
+            "IPQualityScore\\DB\\": "src/IPQualityScore/DB"
         }
     },
     "authors": [
@@ -14,7 +14,6 @@
             "email": "support@ipqualityscore.com"
         }
     ],
-    "minimum-stability": "RC",
     "require": {
     	"php": ">=5.3.0"
     }

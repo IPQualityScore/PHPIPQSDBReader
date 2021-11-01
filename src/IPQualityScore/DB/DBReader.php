@@ -76,6 +76,7 @@ class DBReader {
                             $position = $position - $i;
                             $file_position = $previous[$position];
                             break;
+
                         }
                     }
 
@@ -143,7 +144,6 @@ class DBReader {
             $headers = unpack(static::HEADERS, $this->Read(static::BASE_HEADER_BYTES));
         } catch(\Exception $e){
             throw new FileReaderException("Invalid file format, unable to read first 11 bytes. EID 1");
-            return false;
         }
 
         if(!isset($headers['file_type'])){
@@ -185,8 +185,7 @@ class DBReader {
             throw new FileReaderException("Invalid file format, invalid header bytes, EID 2.");
         }
 
-        $this->tree_start = $headers['header_bytes1'] | $headers['header_bytes2'] | $headers['header_bytes3'];
-
+        $this->tree_start = $this->uVarInt([$headers['header_bytes1'], $headers['header_bytes2'], $headers['header_bytes3']]);
         if($this->tree_start === 0){
             throw new FileReaderException("Invalid file format, invalid header bytes. EID 2");
         }
@@ -207,8 +206,8 @@ class DBReader {
         $length = $this->tree_start - static::BASE_HEADER_BYTES;
         $column_data = $this->Read($length);
 
-        for($i=0;$i<strlen($column_data);$i+=24){
-            $values = unpack(sprintf(static::COLUNN_HEADER, $i), $column_data);
+        for($i=0;$i<$length/24;$i++){
+            $values = unpack(sprintf(static::COLUNN_HEADER, $i * 24), $column_data);
             $this->columns[] = Column::Create($values['name'], BinaryOption::Create($values['value']));
         }
 
@@ -341,5 +340,21 @@ class DBReader {
         }
 
         return $data;
+    }
+
+    protected function uVarInt($bytes){
+        $x = 0;
+        $s = 0;
+        for($i = 0;$i<count($bytes);$i++){
+            $b = $bytes[$i];
+            if($b < 0x80) {
+                return $x | $b<<$s;
+            }
+
+            $x |= $b&0x7f << $s;
+            $s += 7;
+        }
+
+        return 0;
     }
 }

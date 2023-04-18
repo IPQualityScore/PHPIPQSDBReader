@@ -27,6 +27,8 @@ composer require ipqualityscore/ipqs-php-db-reader
     <div class="row">
 		<div class="col-md-12 lgcode">
             <pre class="highlight markdown"><code>
+use IPQualityScore\DB\DBReader;
+
 $ip = "8.8.0.0";
 
 $reader = new DBReader("IPQualityScore-Reputation-IPV4-Database.ipqs");

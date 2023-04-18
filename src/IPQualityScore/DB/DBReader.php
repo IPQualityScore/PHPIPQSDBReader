@@ -312,7 +312,20 @@ class DBReader {
 
     protected function GetRangedStringValue($position){
         $bytes = unpack("Cbyte", $this->ReadAt($position, 1))['byte'];
-        return unpack("a{$bytes}value", $this->Read($bytes))['value']; // Read N bytes from position.
+        return unpack("a{$bytes}value", $this->ReadRangedStringValue($bytes))['value']; // Read N bytes from position.
+    }
+
+    protected function ReadRangedStringValue($bytes){
+        $data = "";
+
+        if($bytes > 0){
+            $raw = fread($this->handler, $bytes);
+            if($raw !== false){
+                $data = $raw;
+            }
+        }
+
+        return $data;
     }
 
     /*

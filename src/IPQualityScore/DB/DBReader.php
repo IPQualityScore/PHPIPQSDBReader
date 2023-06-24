@@ -229,7 +229,7 @@ class DBReader {
         $result = "";
         if($this->ipv6){
             foreach(explode(':', static::expand($ip)) as $block){
-                $result .= base_convert($block, 16, 2);
+                $result .= str_pad(base_convert($block, 16, 2), 16, "0", STR_PAD_LEFT);
             }
         } else {
             foreach(explode('.', $ip) as $block){

@@ -45,6 +45,14 @@ class DBReader {
             throw new FileReaderException("Attemtped to look up IPv6 using IPv4 database file. Aborting.");
         }
 
+        list(, $subnet, ) = explode('/', "0.0.0.0/8");
+        $incomingIP = ip2long($ip);
+        if (ip2long($subnet) <= $incomingIP && $incomingIP <= ip2long('255.255.255.255')) {
+            // ip is in acceptable range
+        } else {
+            throw new Exception("Attempted to look up ip in 0.0.0.0/8 range. Aborting.");
+        }
+
         $position = 0;
         $previous = array();
         $literal = $this->IP2Literal($ip);

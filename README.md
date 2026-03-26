@@ -1,7 +1,7 @@
 <div class="documentation_overview">
 	<h1 class="doc-title">IPQualityScore IP Address Reputation &amp; Proxy Detection PHP DB Reader</h1>
 	<div class="spacing-10"></div>
-	<h2 class="text-bold headerHR" style="font-size: 1.5em;">Flat File Version 1.0</h2>
+	<h2 class="text-bold headerHR" style="font-size: 1.5em;">Flat File Version 2.0</h2>
 	<div class="spacing-10"></div>
 	<p>
         The IPQS PHP DB reader allows you to read our flat file databases and get started implimenting our proxy detection easily.

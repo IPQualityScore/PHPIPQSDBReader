@@ -73,6 +73,14 @@ class DBReader
             }
         }
 
+        list(, $subnet, ) = explode('/', "0.0.0.0/8");
+        $incomingIP = ip2long($ip);
+        if (ip2long($subnet) <= $incomingIP && $incomingIP <= ip2long('255.255.255.255')) {
+            // ip is in acceptable range
+        } else {
+            throw new Exception("Attempted to look up ip in 0.0.0.0/8 range. Aborting.");
+        }
+
         $position = 0;
         $previous = [];
         $literal = $this->IP2Literal($ip);

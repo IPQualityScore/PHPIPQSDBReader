@@ -479,7 +479,7 @@ class IPQSRecord {
         }
 
         if($value->Has(BinaryOption::IsBlacklisted)){
-            $this->isblacklisted = true;
+            $this->blacklisted = true;
         }
 
         if($value->Has(BinaryOption::IsPrivate)){
